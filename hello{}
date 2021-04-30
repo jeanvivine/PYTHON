@@ -1,0 +1,8 @@
+#!/usr/bin/python
+
+variable = "Hello World"
+nom = "Jeanvivine"
+
+phrase = "{} {}" .format(variable,nom)
+print(variable + " " + nom)
+print(phrase)
