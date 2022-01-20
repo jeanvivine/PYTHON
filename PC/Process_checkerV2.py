@@ -110,21 +110,21 @@ def export_resultat():
 
 
 
-    with open('Investigation.csv', 'a') as Investigation:
+    with open('Investigation.csv', 'w') as Investigation:
         for process, hash in dGrelist_to_try.items():
             if process not in dWhiteList.keys():
                 print("PROCESS suspect detecte ! ! ! ", process,
                 "--- HASH du process suspect:", hash, "DATE:",
                 datetime.today(), file=Investigation)
 
-    with open('Investigation.csv', 'a') as Investigation:
+    with open('Investigation.csv', 'w') as Investigation:
         for process, hash in dGrelist_to_try.items():
             if hash not in dWhiteList.values():
                 print("HASH suspect detecte ! ! ! ", hash,
                 "--- PROCESS suspect:", process, "DATE:",
                 datetime.today(), file=Investigation)
 
-    with open('Investigation.csv', 'a') as Investigation:
+    with open('Investigation.csv', 'w') as Investigation:
         for pid in lconnectionreseau:
             if str(pid.pid) in dDifference_pid.keys():
                 print("Le Process", dDifference_pid[str(pid.pid)], "pid:", pid.pid,
