@@ -1,9 +1,0 @@
-#!/usr/bin/python
-
-variable = "Hello Mr"
-nom = "Jeanvivine"
-
-print(variable + " " + nom)
-
-
-
