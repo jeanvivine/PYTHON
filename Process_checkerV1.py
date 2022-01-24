@@ -1,5 +1,18 @@
+'''Comparison of process with a given WHITELIST in order to
+    determine if it's a malicious one.
+
+Usage:
+======
+    Root needed.
+    Python3.10
+    pip3.10 install requirements.txt
+    Process_checkerV1.py & Creation_list.sh have to be in the same folder.
+    python3.10 Process_checker.py
+
+'''
+
 __author__ = "Jeanvivine"
-__date__ = "20/01/2"
+__date__ = "20/01/2022"
 __version__ = "1.0"
 __maintainer__ = "Jeanvivine"
 
@@ -10,19 +23,20 @@ import sys
 import psutil
 import subprocess
 
-lnetworkconnection = []
-dWhiteList = {}
-dGrelist_to_try = {}
-dDifference_pid = {}
+lNetworkconnection = []
+dWhitedict = {}
+dGreytotry = {}
+dDifferencepid = {}
 
 subprocess.call(["clear"])
 
 
-def main():  
-    menu()
-
-
 def menu():
+    """Print the menu.
+    If the choice is not AZERTY, recall menu().
+    Uppercase to lowercase.
+    Y to leave the program.
+    """
     print("""
             ******************Welcome to Process_Checker******************
 
@@ -41,23 +55,23 @@ def menu():
     choice = input("""
                       A: Creation of WHITE list
                       Z: Creation of GREY list
-                      E: Verification of evil Process/Hash 
-                      R: Verification of evil Process using network
+                      E: Verification of malicious Process/Hash
+                      R: Verification of malicious Process using network
                       T: MAGIC
                       Y: Leave
 
                       Please make a choice: """)
 
     if choice.lower() == "a":
-        creation_liste_blanche()
+        create_white_list()
     elif choice.lower() == "z":
-        creation_liste_grise()
+        create_grey_list()
     elif choice.lower() == "e":
-        verification_malveillant()
+        check_malicious_items()
     elif choice.lower() == "r":
-        check_reseau()
+        check_network()
     elif choice.lower() == "t":
-        export_resultat()
+        export_results()
     elif choice.lower() == "y":
         sys.exit
     else:
@@ -66,15 +80,19 @@ def menu():
         menu()
 
 
-def creation_liste_blanche():
-    # Verifier si le fichier existe ou non
-    if os.path.isfile('Process_Hash.txt'):
+def create_white_list():
+    '''Verify if the file is in the current directory.
+    If present return to menu.
+    If not present create the WHITE list Process_Hash.txt
+    '''
+
+    if os.path.isfile('Process_Hash.txt'):  # File in the current directory?
         print()
         print("WHITE list is already present !")
         print()
         menu()
     else:
-        subprocess.call(['./Creation_list.sh'])
+        subprocess.call(['./Creation_list.sh'])  # No file? launch the script!
         print()
         print("Creation of WHITE list  -> OK !")
         print()
@@ -82,8 +100,12 @@ def creation_liste_blanche():
         menu()
 
 
-def creation_liste_grise():
-    # Verifier si le fichier existe ou non
+def create_grey_list():
+    '''Verify if the file is in the current directory.
+    If present return to menu.
+    If not present create the GREY list Process_Hash_grey.txt
+    '''
+
     if os.path.isfile('Process_Hash_grey.txt'):
         print()
         print("GREY list is already present !")
@@ -98,74 +120,94 @@ def creation_liste_grise():
         menu()
 
 
-def export_resultat():
-    #recuperation of function results
-    global dGrelist_to_try
-    global dWhiteList
-    global dDifference_pid
-    global lnetworkconnection
+def export_results():
+    '''Export all the results in Investigation.csv with a timestamp.
+    Then return to menu.
+    '''
+
+    global dGreytotry
+    global dWhitedict
+    global dDifferencepid
+    global lNetworkconnection
 
     print()
     print("Export in progress ...")
     print("Exporting to Investigation.csv  -> OK !")
 
     with open('Investigation.csv', 'a') as Investigation:
-        for process, hash in dGrelist_to_try.items():
-            if process not in dWhiteList.keys():
+        # Opening the file to write
+        for process, hash in dGreytotry.items():
+            # dictionnay with process and hash
+            if process not in dWhitedict.keys():
+                # if the process is not in dWhitedict dictionnary
+                # write it in Investigation.csv
                 print("Suspect PROCESS  found ! ! ! ", process,
-                "--- HASH of suspect PROCESS:", hash, "DATE:",
-                datetime.today(), file=Investigation)
+                      "--- HASH of suspect PROCESS:", hash, "DATE:",
+                      datetime.today(), file=Investigation)
 
     with open('Investigation.csv', 'a') as Investigation:
-        for process, hash in dGrelist_to_try.items():
-            if hash not in dWhiteList.values():
+        # Opening the file to write
+        for process, hash in dGreytotry.items():
+            # dictionnay with process and hash
+            if hash not in dWhitedict.values():
+                # if the Hash is not in dWhitedict dictionnary
+                # write it in Investigation.csv
                 print("Suspect HASH  found ! ! ! ", hash,
-                "--- PROCESS of suspect HASH:", process, "DATE:",
-                datetime.today(), file=Investigation)
+                      "--- PROCESS of suspect HASH:", process, "DATE:",
+                      datetime.today(), file=Investigation)
 
     with open('Investigation.csv', 'a') as Investigation:
-        for pid in lnetworkconnection:
-            if str(pid.pid) in dDifference_pid.keys():
-                print("The Process", dDifference_pid[str(pid.pid)], "pid:",
-                    pid.pid, " is using Network", pid.laddr, pid.raddr,
-                    pid.status, pid.type, "LINK:", datetime.today(),
-                    file=Investigation)
+        # Opening the file to write
+        for pid in lNetworkconnection:
+            # dictionnay with process and hash
+            if str(pid.pid) in dDifferencepid.keys():
+                # If pid number is in the dictionnary
+                # write it in Investigation.csv
+                print("The Process", dDifferencepid[str(pid.pid)], "pid:",
+                      pid.pid, " is using Network", pid.laddr, pid.raddr,
+                      pid.status, pid.type, "LINK:", datetime.today(),
+                      file=Investigation)
 
     menu()
 
 
-def verification_malveillant():
-    global dGrelist_to_try
-    global dWhiteList
+def check_malicious_items():
+    '''Creation of the dictionnary WHITE/GREY list.
+    Comparison of WHITE and GREY list.
+    If there is a difference print the malicious Process/Hash.
+    '''
 
-    if os.path.isfile('Process_Hash_grey.txt'):
+    global dGreytotry
+    global dWhitedict
 
-        # Generation Dictionnaries WHITE list
-        dWhiteList = {}
+    if os.path.isfile('Process_Hash_grey.txt'):  # If the file is here.
+
+        # Creation of Dictionnary WHITElist
+        dWhitedict = {}
         vFiletoparsewhite = open("Process_Hash.txt")
-        for line in vFiletoparsewhite:
+        for line in vFiletoparsewhite:  # For everyline in Process_Hash
             pid, proc, hash = line.split()  # Separator space
-            dWhiteList[proc] = hash
+            dWhitedict[proc] = hash  # Key is proc and value is the Hash
 
-        # Generation Dictionnaries GREY list
-        dGrelist_to_try = {}
+        # Creation of Dictionnary GREYlist
+        dGreytotry = {}
         vFiletoparseGrey = open("Process_Hash_grey.txt")
-        for line in vFiletoparseGrey:
+        for line in vFiletoparseGrey:  # For everyline in Process_Hash_grey
             pid, proc, hash = line.split()  # Separator space
-            dGrelist_to_try[proc] = hash       
-        #boucle comparison
-        for process, hash in dGrelist_to_try.items():
-            if process not in dWhiteList.keys():
+            dGreytotry[proc] = hash  # Key is proc and value is the Hash
+        # Comparison loop
+        for process, hash in dGreytotry.items():  # For items in dict
+            if process not in dWhitedict.keys():
                 print("Suspect PROCESS  found ! ! ! ", process, "--- HASH \
-                    of suspect PROCESS :", hash, "DATE:", datetime.today())
+of suspect PROCESS :", hash, "DATE:", datetime.today())
 
         print()
         print()
-
-        for process, hash in dGrelist_to_try.items():
-            if hash not in dWhiteList.values():
+        # Comparison loop
+        for process, hash in dGreytotry.items():
+            if hash not in dWhitedict.values():
                 print("Suspect HASH found ! ! ! ", hash, "--- PROCESS \
-                suspect:", process, "DATE:", datetime.today())     
+suspect:", process, "DATE:", datetime.today())
         menu()
     else:
         print()
@@ -175,35 +217,41 @@ def verification_malveillant():
         menu()
 
 
-def check_reseau():
-    dGrelist_to_try_pid = {}
-    dWhitelist_to_try_pid = {}
-    global lnetworkconnection
-    global dDifference_pid
-#    #Generation dico avec le PID
+def check_network():
+    '''Creation of the dictionnary with the PID.
+    Comparison of WHITE and GREY list.
+    If PID is in dDifferencepid, check his network status and display it.
+    '''
+    dGreytotry_pid = {}
+    dWhitedict_to_try_pid = {}
+    global lNetworkconnection
+    global dDifferencepid
+    # Creation of dictionnaries with PID
     vFiletoparse_grey_pid = open("Process_Hash_grey.txt")
     for line in vFiletoparse_grey_pid:
-        key, value, hash = line.split()  # Separateur un espace
-        dGrelist_to_try_pid[key] = value
+        proc, pid, hash = line.split()  # Separator space
+        dGreytotry_pid[proc] = pid  # Key is proc and value is the PID
 
     vFiletoparse_white_pid = open("Process_Hash.txt")
     for line in vFiletoparse_white_pid:
-        key, value, hash = line.split()  # Separateur un espace
-        dWhitelist_to_try_pid[key] = value
+        proc, pid, hash = line.split()  # Separator space
+        dWhitedict_to_try_pid[proc] = pid  # Key is proc and value is the PID
+    # Comparison loop
+    for pid, process in dGreytotry_pid.items():
+        if process not in dWhitedict_to_try_pid.values():
+            dDifferencepid.update({pid: process})  # Update the dictionnary
 
-    for pid, process in dGrelist_to_try_pid.items():
-        if process not in dWhitelist_to_try_pid.values():
-            dDifference_pid.update({pid: process})
-
-    lnetworkconnection = psutil.net_connections()
-    for pid in lnetworkconnection:
-        if str(pid.pid) in dDifference_pid.keys():
-            print("The Process", dDifference_pid[str(pid.pid)], "pid:",
-                pid.pid, " is using Network", pid.laddr[0], pid.laddr[1],
-                pid.raddr, pid.type, "LINK:", pid.status)
+    lNetworkconnection = psutil.net_connections()  # Psutil result in a list
+    for pid in lNetworkconnection:
+        if str(pid.pid) in dDifferencepid.keys():
+            # If pid number is in the dictionnary
+            # Display it
+            print("The Process", dDifferencepid[str(pid.pid)], "pid:",
+                  pid.pid, " is using Network", pid.laddr[0], pid.laddr[1],
+                  pid.raddr, pid.type, "LINK:", pid.status)
     print()
     menu()
 
 
 if __name__ == '__main__':
-    main()
+    menu()
