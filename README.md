@@ -2,7 +2,7 @@
 <p>Comparison of Process_Hash.txt &amp; Process_Hash_grey.txt.</p>
 <p>Will improve it soon.</p>
 <h2>Installation</h2>
-<p><code>python pip install requirements.txt</code> </p>
+<p><code>pip install requirements.txt</code> </p>
 <p>Process_checkerV1.py &amp; Creation_list.sh have to be in the same folder.</p>
 <h2>Need to:</h2>
 <ul>

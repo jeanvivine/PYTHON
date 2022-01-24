@@ -13,11 +13,9 @@ awk 'FNR==NR{a[$2]=$1;next}{if(a[$1]==""){a[$1]=0}; \
 
 FILE=/root/Process_Hash.txt
 if [ -f "$FILE" ]; then
-    #awk '{$1="";sub("","");print}' fusionpid_hash_proc.txt | sed 's/^ *//g'  > Process_Hash_grey.txt
     cat fusionpid_hash_proc.txt > Process_Hash_grey.txt
 else
     cat fusionpid_hash_proc.txt > Process_Hash.txt
-    #awk '{$1="";sub("","");print}' fusionpid_hash_proc.txt | sed 's/^ *//g'  > Process_Hash.txt
 fi
 
 rm -rf pid_process_name.txt hash.txt fusionpid_hash_proc.txt

@@ -1,7 +1,8 @@
-"""
-Commentaire a mettre !
+__author__ = "azertyui"
+__date__ = "20/01/2"
+__version__ = "1.0"
+__maintainer__ = "azertyui"
 
-"""
 from datetime import datetime
 from locale import LC_ALL
 import os.path
