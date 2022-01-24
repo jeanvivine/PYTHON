@@ -5,7 +5,7 @@ Usage:
 ======
     Root needed.
     Python3.10
-    pip3.10 install requirements.txt
+    pip3.10 install -r requirements.txt
     Process_checkerV1.py & Creation_list.sh have to be in the same folder.
     python3.10 Process_checker.py
 
@@ -226,31 +226,40 @@ def check_network():
     dWhitedict_to_try_pid = {}
     global lNetworkconnection
     global dDifferencepid
-    # Creation of dictionnaries with PID
-    vFiletoparse_grey_pid = open("Process_Hash_grey.txt")
-    for line in vFiletoparse_grey_pid:
-        proc, pid, hash = line.split()  # Separator space
-        dGreytotry_pid[proc] = pid  # Key is proc and value is the PID
 
-    vFiletoparse_white_pid = open("Process_Hash.txt")
-    for line in vFiletoparse_white_pid:
-        proc, pid, hash = line.split()  # Separator space
-        dWhitedict_to_try_pid[proc] = pid  # Key is proc and value is the PID
-    # Comparison loop
-    for pid, process in dGreytotry_pid.items():
-        if process not in dWhitedict_to_try_pid.values():
-            dDifferencepid.update({pid: process})  # Update the dictionnary
+    if os.path.isfile('Process_Hash_grey.txt'):  # If the file is here.
+        # Creation of dictionnaries with PID
+        vFiletoparse_grey_pid = open("Process_Hash_grey.txt")
+        for line in vFiletoparse_grey_pid:
+            proc, pid, hash = line.split()  # Separator space
+            dGreytotry_pid[proc] = pid  # Key is proc and value is the PID
 
-    lNetworkconnection = psutil.net_connections()  # Psutil result in a list
-    for pid in lNetworkconnection:
-        if str(pid.pid) in dDifferencepid.keys():
-            # If pid number is in the dictionnary
-            # Display it
-            print("The Process", dDifferencepid[str(pid.pid)], "pid:",
-                  pid.pid, " is using Network", pid.laddr[0], pid.laddr[1],
-                  pid.raddr, pid.type, "LINK:", pid.status)
-    print()
-    menu()
+        vFiletoparse_white_pid = open("Process_Hash.txt")
+        for line in vFiletoparse_white_pid:
+            proc, pid, hash = line.split()  # Separator space
+            dWhitedict_to_try_pid[proc] = pid  # Key is proc and value is PID
+        # Comparison loop
+        for pid, process in dGreytotry_pid.items():
+            if process not in dWhitedict_to_try_pid.values():
+                dDifferencepid.update({pid: process})  # Update the dictionnary
+
+        lNetworkconnection = psutil.net_connections()  # Psutil result in list
+        for pid in lNetworkconnection:
+            if str(pid.pid) in dDifferencepid.keys():
+                # If pid number is in the dictionnary
+                # Display it
+                print("The Process", dDifferencepid[str(pid.pid)], "pid:",
+                      pid.pid, " is using Network", pid.laddr[0], pid.laddr[1],
+                      pid.raddr, pid.type, "LINK:", pid.status)
+
+        print()
+        menu()
+    else:
+        print()
+        print("Create GREY list first ! ! !")
+        print()
+        print()
+        menu()
 
 
 if __name__ == '__main__':

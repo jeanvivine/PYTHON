@@ -3,7 +3,7 @@
 <p>You can use the Creation_list.sh alone in order to generate the WHITELIST at a given time.</p>
 <p>Will improve it soon.</p>
 <h2>Installation</h2>
-<p><code>pip install requirements.txt</code> </p>
+<p><code>pip install -r requirements.txt</code> </p>
 <p>Process_checkerV1.py &amp; Creation_list.sh have to be in the same folder.</p>
 <h2>Need to:</h2>
 <ul>
