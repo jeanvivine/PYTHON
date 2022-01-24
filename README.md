@@ -1,5 +1,6 @@
 <h1>Process_Checker</h1>
 <p>Comparison of Process_Hash.txt &amp; Process_Hash_grey.txt.</p>
+<p>You can use the Creation_list.sh alone in order to generate the WHITELIST at a given time.</p>
 <p>Will improve it soon.</p>
 <h2>Installation</h2>
 <p><code>pip install requirements.txt</code> </p>

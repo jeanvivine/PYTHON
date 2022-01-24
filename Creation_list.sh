@@ -2,7 +2,7 @@
 ps aux | awk {'print $2,$11'} > pid_process_name.txt
 
 cat pid_process_name.txt | awk {'print $1'} | while read line
-do 
+do
 sha256sum /proc/$line/exe
 done > hash.txt 2> /dev/null
 

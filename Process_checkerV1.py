@@ -1,7 +1,7 @@
-__author__ = "azertyui"
+__author__ = "Jeanvivine"
 __date__ = "20/01/2"
 __version__ = "1.0"
-__maintainer__ = "azertyui"
+__maintainer__ = "Jeanvivine"
 
 from datetime import datetime
 from locale import LC_ALL
@@ -63,7 +63,7 @@ def menu():
     else:
         print("You have to choose beetween A, Z, E, R, T ou Y !")
         print("Try again !")
-        menu()  # or main ?
+        menu()
 
 
 def creation_liste_blanche():
@@ -99,6 +99,7 @@ def creation_liste_grise():
 
 
 def export_resultat():
+    #recuperation of function results
     global dGrelist_to_try
     global dWhiteList
     global dDifference_pid
@@ -139,21 +140,20 @@ def verification_malveillant():
 
     if os.path.isfile('Process_Hash_grey.txt'):
 
-        # Generation lsit & Dictionnaire liste blanche
+        # Generation Dictionnaries WHITE list
         dWhiteList = {}
         vFiletoparsewhite = open("Process_Hash.txt")
         for line in vFiletoparsewhite:
-            pid, proc, hash = line.split()  # Separateur un espace
+            pid, proc, hash = line.split()  # Separator space
             dWhiteList[proc] = hash
 
-        # Generation list & Dictionnaire liste grise
+        # Generation Dictionnaries GREY list
         dGrelist_to_try = {}
         vFiletoparseGrey = open("Process_Hash_grey.txt")
         for line in vFiletoparseGrey:
-            pid, proc, hash = line.split()  # Separateur un espace
-            dGrelist_to_try[proc] = hash
-        #boucle comparaison
-
+            pid, proc, hash = line.split()  # Separator space
+            dGrelist_to_try[proc] = hash       
+        #boucle comparison
         for process, hash in dGrelist_to_try.items():
             if process not in dWhiteList.keys():
                 print("Suspect PROCESS  found ! ! ! ", process, "--- HASH \
