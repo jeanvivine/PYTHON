@@ -11,7 +11,7 @@ Usage:
 
 '''
 
-__author__ = "Jeanvivine"
+__author__ = "Jeanvzzzzzivine"
 __date__ = "20/01/2022"
 __version__ = "1.0"
 __maintainer__ = "Jeanvivine"
